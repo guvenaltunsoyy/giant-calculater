@@ -2,5 +2,101 @@
 layout: default
 ---
 
-<label>come here boy!</label>
-<button>approve it!</button>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@trendyol/baklava@2.1.0/dist/themes/default.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@trendyol/baklava@2.1.0/dist/baklava.js"></script>
+<style>
+  .label {
+  font: var(--bl-font-title-3-regular);
+  display: inline-flex;
+  gap: 8px;
+}
+
+.container{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+label:after{
+  content: "||";
+  margin-left: 8px;
+}
+
+label{
+  width: 100px;
+}
+
+</style>
+</head>
+
+
+<body>
+
+  
+<form novalidate>
+    <div class="chromatic-wrapper">
+        <bl-input name="initialCash" label="Baslangic Tutari" type="number" value="4461" label-fixed></bl-input>
+        <bl-input name="days" label="Gun Sayisi" value="30" type="number" label-fixed></bl-input>
+        <bl-input name="currency" label="Dovuz Kuru" value="19.5" label-fixed></bl-input>
+        <bl-input name="dailyPercentage" label="Gunluk Artis Orani" value="0.023" help-text="Varsayilan olarak %2.3 alinmistir." label-fixed></bl-input>
+      </div>
+    <bl-button type="submit">Submit</bl-button>
+  </form>
+  <div class="container">
+    <div class="label">
+      <label>Baslangic</label>
+      <label id="lbInitUsd"></label>      
+      <label id="lbInitTry"></label>
+    </div>
+
+    <div class="label">
+      <label>Total</label>
+      <label id="lbTotalUsd"></label>      
+      <label id="lbTotalTry"></label>
+    </div>
+
+    <div class="label">
+      <label>Kâr</label>
+      <label id="lbBenefitUsd"></label>      
+      <label id="lbBenefitTry"></label>
+    </div>
+</div>
+
+</body>
+
+<script>
+  const log= console.log;
+    const format = (s,opt) => parseFloat(s).toLocaleString("tr-TR", opt);
+   
+ 
+
+    document.querySelector('form').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const days =parseFloat(formData.get("days"));
+      let cash =parseFloat(formData.get("initialCash"));
+      const iCash = cash;
+      const currency=parseFloat(formData.get("currency"));
+      const dailyPercentage = parseFloat(formData.get("dailyPercentage"));
+
+      const exchange = m => format((m*currency),{style: "currency",currency: "TRY"});
+
+      for (let index = 0; index < days; index++) {
+        cash += cash* dailyPercentage;
+      }
+      const benefit = cash-iCash;
+
+      document.getElementById("lbInitUsd").innerText = format(cash-benefit,{ style: "currency", currency: "USD"})
+      document.getElementById("lbInitTry").innerText = exchange(cash-benefit)
+
+      document.getElementById("lbTotalUsd").innerText =   format(cash,{style: "currency",currency: "USD"})
+      document.getElementById("lbTotalTry").innerText =   exchange(cash)
+      
+      document.getElementById("lbBenefitUsd").innerText = format(benefit,{style: "currency",currency: "USD"})
+      document.getElementById("lbBenefitTry").innerText = exchange(benefit)
+
+    });
+  </script>
+</html>
